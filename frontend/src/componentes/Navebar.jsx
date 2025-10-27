@@ -6,7 +6,7 @@ import { useAuth } from "../context/AuthProvider.jsx";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { CgInfinity } from "react-icons/cg";
-import DarkModeToggle from "./DarkModeToggle";
+// import DarkModeToggle from "./DarkModeToggle";
 
 
 const Navebar = () => {
@@ -89,7 +89,7 @@ const Navebar = () => {
             {!isAuthenticated ? (
               <Link to="/login">LogIn</Link>
             ) : (
-              <button onClick={handleLogoutBtn}>Logout</button>
+              <button onClick={handleLogoutBtn} className="hover:text-red-500 duration-200 ease-in-out">Logout</button>
             )}
             {/* <DarkModeToggle /> */}
           </div>

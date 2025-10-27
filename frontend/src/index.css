@@ -6,10 +6,48 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --bg: #f8fafc;
+  --card: #ffffff;
+  --text: #0f172a;
+  --accent: #2563eb;
+}
+
+/* 🌞 Light */
+.light {
+  --bg: #f8fafc;
+  --card: #ffffff;
+  --text: #0f172a;
+  --accent: #2563eb;
+}
+
+/* 🌌 Dim */
+.dim {
+  --bg: #1e293b;
+  --card: #334155;
+  --text: #f1f5f9;
+  --accent: #60a5fa;
+}
+
+/* 🌙 Dark */
+.dark {
+  --bg: #0f172a;
+  --card: #1e293b;
+  --text: #e2e8f0;
+  --accent: #3b82f6;
+}
+
+/* body {
+    font-family: 'poppins', 'sans-serif';
+  background-color: var(--bg);
+  color: var(--text);
+  transition: background-color 0.3s ease, color 0.3s ease;
+} */
+
 body{
     font-family: 'poppins', 'sans-serif';
     background-color: rgba(240, 248, 255, 0.662);
-    /* background-color: rgba(240, 248, 255, 0.662); */
+    background-color: rgba(240, 248, 255, 0.662);
     color: black;
 }
 /* Dark Mode */

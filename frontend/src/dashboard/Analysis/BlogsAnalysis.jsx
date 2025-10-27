@@ -46,7 +46,7 @@ const BlogsAnalysis = () => {
                 Track your blog performance and reader engagement
               </p>
             </div>
-            <div className="flex flex-wrap items-center gap-3">
+            {/* <div className="flex flex-wrap items-center gap-3">
               <select
                 value={selectedPeriod}
                 onChange={(e) => setSelectedPeriod(e.target.value)}
@@ -71,7 +71,7 @@ const BlogsAnalysis = () => {
                 <Download className="w-4 h-4" />
                 Export
               </button>
-            </div>
+            </div> */}
           </div>
         </div>
 
