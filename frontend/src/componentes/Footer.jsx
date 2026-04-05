@@ -13,8 +13,27 @@ const Footer = () => {
   ];
 
   return (
-    <footer className=''>
+    // <footer className='relative mt-20 overflow-hidden'>
+    <footer className='relative mt-20 overflow-hidden'>
+      {/* <div className="border-y-2 px-5 md:px-16"> */}
+
+        {/* 🌊 Background SVG */}
+  <div className="absolute top-0 left-0 w-full h-full -z-10">
+    <svg
+      className="w-full h-full"
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 1440 320"
+      preserveAspectRatio="none"
+    >
+      <path
+        fill="#273036"
+        fillOpacity="0.2"
+        d="M0,0L40,32C80,64,160,128,240,128C320,128,400,64,480,80C560,96,640,192,720,208C800,224,880,160,960,149.3C1040,139,1120,181,1200,181.3C1280,181,1360,139,1400,117.3L1440,96L1440,320L0,320Z"
+      />
+    </svg>
+  </div>
       <div className="border-y-2 px-5 md:px-16">
+
         <div className='grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-44 py-10'>
           {["COMPANY", "HELP CENTER", "LEGAL"].map((section, idx) => (
             <ul key={idx} className='text-sm space-y-2'>
@@ -52,7 +71,7 @@ const Footer = () => {
         <CgInfinity className="text-3xl" /> 
         BreezBlogs</Link>
         <div className="hidden md:block text-gray-400 text-sm">
-          <p>&copy; 2025 BreezBlogs PVT. LTD. All rights reserved</p>
+          <p>&copy; 2026 BreezBlogs PVT. LTD. All rights reserved</p>
         </div>
         <div className="flex space-x-6">
           {socialLinks.map((link, idx) => (
