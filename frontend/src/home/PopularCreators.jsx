@@ -27,7 +27,7 @@ function PopularCreators() {
   return (
     <div className=" md:mx-10 px-5 p-5  my-5 mb-5">
       <h1 className="text-2xl font-semibold mb-6">Popular Creators</h1>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 rounded-lg my-5  border-black-200 shadow-xl p-2 pt-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 rounded-lg my-5 shadow-md p-2 pt-8">
         {admin && admin.length > 0 ? (
           admin.slice(0, 4).map((element) => {
             return (
