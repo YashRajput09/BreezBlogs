@@ -29,7 +29,8 @@ function App() {
   
   return (
     <>
-      <div className="">
+      {/* <div className=""> */}
+      <div className="pt-28 md:pt-20">
        {!hidePages && <Navebar/>}
        <Routes>
         <Route path="/" element={<Home/>}/>
