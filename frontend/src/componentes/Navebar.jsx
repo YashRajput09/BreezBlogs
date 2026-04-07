@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { RiMenu3Fill, RiCloseFill } from "react-icons/ri";
 // import { CgLogIn } from "react-icons/cg";
@@ -8,11 +8,20 @@ import axios from "axios";
 import { CgInfinity } from "react-icons/cg";
 // import DarkModeToggle from "./DarkModeToggle";
 
-
 const Navebar = () => {
   const { profile, isAuthenticated, setIsAuthenticated } = useAuth();
 
   const [show, setShow] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 60);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
   // const {isAuthenticated} =
   // Menu links for both mobile and desktop
   const menuLinks = [
@@ -34,7 +43,7 @@ const Navebar = () => {
         {}, // Empty body for the logout request (if required)
         {
           withCredentials: true, // It Ensure credentials (cookies, tokens) are sent
-        }
+        },
       );
       toast.success("User loggedOut successfully");
       // window.location.pathname = '/login';
@@ -47,12 +56,31 @@ const Navebar = () => {
 
   return (
     <>
-      <nav className="shadow-xl px-4 py-3">
+      {/* <nav className="shadow-xl px-4 py-3"> */}
+      <nav
+        className={`
+    fixed left-1/2 -translate-x-1/2 z-50
+    transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]
+
+    ${
+      scrolled
+        ? "top-6 w-[82%] max-w-5xl px-6 py-2 rounded-full bg-white/80 backdrop-blur-xl border border-white/10 shadow-lg"
+        : "top-0 w-full px-4 py-4 bg-white shadow-xl"
+    }
+  `}
+      >
         <div className="flex justify-between items-center md:mx-11">
           <div>
             <Link to={'/'} className=" flex items-center font-semibold text-blue-500 text-xl gap-1">
-            <CgInfinity className="text-3xl" /> 
-             BreezBlogs 
+            
+            {/* <Link
+              to="/"
+              className={`flex items-center font-semibold text-xl gap-1 ${
+                scrolled ? "text-white" : "text-blue-500"
+              }`}
+            > */}
+              <CgInfinity className="text-3xl" />
+              BreezBlogs
             </Link>
           </div>
 
@@ -66,7 +94,10 @@ const Navebar = () => {
                   <Link
                     key={index}
                     to={link.to}
-                    className="hover:text-cyan-600 duration-400"
+                    // className="hover:text-cyan-600 duration-400"
+                    className={`hover:text-blue-500 duration-300 ${
+                      scrolled ? "text-black/80" : "text-black"
+                    }`}
                   >
                     {link.label}
                   </Link>
@@ -81,17 +112,30 @@ const Navebar = () => {
           </div>
 
           {/* Desktop Dashboard/Login Buttons */}
-          <div className="hidden md:flex items-center gap-5 border-b-2 border-t-2 shadow-xl duration-200 d px-3 py-2 rounded-lg">
+          <div className="hidden md:flex items-center gap-5">
             {isAuthenticated && profile?.role === "admin" && (
-              <Link to="/dashboard">Dashboard</Link>
+              <Link
+                to="/dashboard"
+                className={`${scrolled ? "text-black" : "text-black"}`}
+              >
+                Dashboard
+              </Link>
             )}
 
             {!isAuthenticated ? (
-              <Link to="/login">LogIn</Link>
+              <Link
+                to="/login"
+                className={`px-4 py-2 rounded-full transition ${
+                  scrolled ? "bg-white text-black" : "bg-black text-white"
+                }`}
+              >
+                LogIn
+              </Link>
             ) : (
-              <button onClick={handleLogoutBtn} className="hover:text-red-500 duration-200 ease-in-out">Logout</button>
+              <button onClick={handleLogoutBtn} className="hover:text-red-500">
+                Logout
+              </button>
             )}
-            {/* <DarkModeToggle /> */}
           </div>
         </div>
 
@@ -109,16 +153,40 @@ const Navebar = () => {
                   {link.label}
                 </Link>
               ))}
-               {/* <DarkModeToggle /> */}
+              {/* <DarkModeToggle /> */}
               {isAuthenticated ? (
                 <>
-                <Link to='/dashboard' className="hover:text-blue-500" onClick={toggleMenu}> Dashboard</Link>
-                <button onClick={handleLogoutBtn} className="hover:text-red-500">Logout</button>
+                  <Link
+                    to="/dashboard"
+                    className="hover:text-blue-500"
+                    onClick={toggleMenu}
+                  >
+                    {" "}
+                    Dashboard
+                  </Link>
+                  <button
+                    onClick={handleLogoutBtn}
+                    className="hover:text-red-500"
+                  >
+                    Logout
+                  </button>
                 </>
               ) : (
                 <>
-                <Link to='/login' className="hover:text-blue-500" onClick={toggleMenu}>LogIn</Link>
-                <Link to='/signup' className="hover:text-green-500" onClick={toggleMenu}>SignUp</Link>
+                  <Link
+                    to="/login"
+                    className="hover:text-blue-500"
+                    onClick={toggleMenu}
+                  >
+                    LogIn
+                  </Link>
+                  <Link
+                    to="/signup"
+                    className="hover:text-green-500"
+                    onClick={toggleMenu}
+                  >
+                    SignUp
+                  </Link>
                 </>
               )}
             </ul>
