@@ -7,6 +7,7 @@ import toast from "react-hot-toast";
 import axios from "axios";
 import { CgInfinity } from "react-icons/cg";
 // import DarkModeToggle from "./DarkModeToggle";
+import LogoutButton from "./Interactions/LogoutButton.jsx";
 
 const Navebar = () => {
   const { profile, isAuthenticated, setIsAuthenticated } = useAuth();
@@ -64,7 +65,7 @@ const Navebar = () => {
 
     ${
       scrolled
-        ? "top-6 w-[82%] max-w-5xl px-6 py-2 rounded-full bg-white/80 backdrop-blur-xl border border-white/10 shadow-lg"
+        ? "top-6 w-[82%] max-w-5xl px-6 py-2 rounded-3xl md:rounded-full bg-white/80 backdrop-blur-xl border border-white/10 shadow-lg"
         : "top-0 w-full px-4 py-4 bg-white shadow-xl"
     }
   `}
@@ -132,9 +133,10 @@ const Navebar = () => {
                 LogIn
               </Link>
             ) : (
-              <button onClick={handleLogoutBtn} className="hover:text-red-500">
-                Logout
-              </button>
+              // <button onClick={handleLogoutBtn} className="hover:text-red-500">
+              //   Logout
+              // </button>
+              <LogoutButton onClick={handleLogoutBtn}/>
             )}
           </div>
         </div>

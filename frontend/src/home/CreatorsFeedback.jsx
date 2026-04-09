@@ -25,18 +25,50 @@ function Card({ t, delay }) {
       ref={ref}
       style={{
         opacity: visible ? 1 : 0,
-        transform: visible ? "translateY(0)" : "translateY(30px)",
-        transition: `all 0.6s ease ${delay}ms`,
+        transform: visible ? "translateY(0)" : "translateY(40px)",
+        transition: `all 0.7s cubic-bezier(0.22,1,0.36,1) ${delay}ms`,
       }}
-      className="p-6 bg-card rounded-xl border-2"
+      className="relative mt-12"
     >
-      <p className="italic mb-4">"{t.quote}"</p>
-      <div className="flex gap-3">
-      <img className="w-12 h-12 rounded-full" src="https://static.vecteezy.com/system/resources/thumbnails/036/594/092/small_2x/man-empty-avatar-photo-placeholder-for-social-networks-resumes-forums-and-dating-sites-male-and-female-no-photo-images-for-unfilled-user-profile-free-vector.jpg" alt="" />
-      <div className="">
-      <h4 className="font-semibold">{t.name}</h4>
-      <p className="text-sm text-muted">{t.role}</p>
+      {/* Avatar (floating) */}
+      <div className="absolute -top-10 left-1/2 -translate-x-1/2 z-10">
+        <img
+          className="w-20 h-20 rounded-full border-4 border-white shadow-md"
+          src="https://static.vecteezy.com/system/resources/thumbnails/036/594/092/small_2x/man-empty-avatar-photo-placeholder-for-social-networks-resumes-forums-and-dating-sites-male-and-female-no-photo-images-for-unfilled-user-profile-free-vector.jpg"
+          alt=""
+        />
       </div>
+
+      {/* Card */}
+      <div className="
+        bg-white rounded-2xl p-8 pt-14 text-center
+        shadow-[0_10px_30px_rgba(0,0,0,0.1)]
+        border border-gray-100
+        hover:shadow-[0_20px_50px_rgba(0,0,0,0.15)]
+        transition duration-300
+      ">
+        
+        {/* Stars */}
+        <div className="flex justify-center gap-1 text-yellow-400 mb-3">
+          {"★★★★★".split("").map((_, i) => (
+            <span key={i}>★</span>
+          ))}
+        </div>
+
+        {/* Name */}
+        <h4 className="font-semibold text-lg mb-2">
+          {t.name}
+        </h4>
+
+        {/* Quote */}
+        <p className="text-gray-600 text-sm leading-relaxed italic mb-4">
+          “{t.quote}”
+        </p>
+
+        {/* Role */}
+        <p className="text-xs text-gray-400">
+          {t.role}
+        </p>
       </div>
     </div>
   );
@@ -52,10 +84,17 @@ export default function CreatorsFeedback() {
         What creators say
       </h2>
 
-      <div className="grid md:grid-cols-3 gap-6 mx-10 ">
+      <div className="grid md:grid-cols-3 gap-8 mx-6 md:mx-10 items-start">
         {testimonials.map((t, i) => (
-          <Card key={i} t={t} delay={i * 120} />
-        ))}
+  <div
+    key={i}
+    className={`
+      ${i === 1 ? "md:mt-12" : "md:mt-0"}
+    `}
+  >
+    <Card t={t} delay={i * 120} />
+  </div>
+))}
       </div>
     </section>
   );
