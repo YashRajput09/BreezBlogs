@@ -40,7 +40,7 @@ export const createBlog = async (req, res) => {
     }
 
     // 3. Validate required fields in req.body
-    const { category, title, description, tags} = req.body;
+    const { category, title, description, tags, status} = req.body;
   // console.log(category, title, tags);
   
     let formattedTags;

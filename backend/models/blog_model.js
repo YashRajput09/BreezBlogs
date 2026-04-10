@@ -56,6 +56,11 @@ const blogSchema = new mongoose.Schema({
         type: String,
         required: true,
     }],
+    status: {
+        type: String,
+        enum: ['draft', 'published', 'archived'],
+        default: 'draft',
+    },
     tags: [{
         type: [String],
         required: true,
