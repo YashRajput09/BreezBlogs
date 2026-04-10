@@ -5,7 +5,7 @@ const createTokenAndSaveCookies = async (userId, res, rememberMe = false) => {
     // console.log(process.env.JWT_SECRET);
     
     const token = jwt.sign({ userId }, process.env.JWT_SECRET,{
-        expiresIn: rememberMe ? "7d" : "1h",
+        expiresIn: rememberMe ? "7d" : "1d",
     });
     res.cookie("jwttoken", token , {
         httpOnly: false, //protect from xss attck 
