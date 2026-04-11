@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect} from "react";
 import axios from "axios";
 import { toast } from "react-hot-toast";
 import SubmitBtnLoader from "../loaders/SubmitBtnLoader";
@@ -14,10 +14,26 @@ const CreateBlog = () => {
   const [blogImagePreview, setBlogImagePreview] = useState("");
   const [loading, setLoading] = useState(false);
   const [metadataGenerated, setMetadataGenerated] = useState(false);
+  const [blogId, setBlogId] = useState(null);
+  const [statusMsg, setStatusMsg] = useState("");
 
   const descriptionRef = useRef(null);
 
   const { autoMetaLoading, generateMetadata } = useAutoGenerateMeta();
+
+  useEffect(() => {
+  const saved = localStorage.getItem("draft-blog");
+
+  if (saved) {
+    const data = JSON.parse(saved);
+
+    setTitle(data.title || "");
+    setCategory(data.category || "");
+    setDescription(data.description || "");
+    setTags(data.tags || []);
+    setBlogId(data.blogId || null);
+  }
+}, []);
 
   const addTag = () => {
     const formattedTag = tagInput.trim().replace(/^#/, "");
@@ -52,6 +68,19 @@ const CreateBlog = () => {
     };
   };
 
+  useEffect(() => {
+  localStorage.setItem(
+    "draft-blog",
+    JSON.stringify({
+      title,
+      category,
+      description,
+      tags,
+      blogId,
+    })
+  );
+}, [title, category, description, tags, blogId]);
+
   const handleGenerateMeta = () => {
     generateMetadata(blogImage, (data) => {
       setTitle(data.title || "");
@@ -66,6 +95,42 @@ const CreateBlog = () => {
     });
   };
 
+ const saveDraft = async () => {
+  try {
+    setStatusMsg("Saving draft...");
+
+    const formData = new FormData();
+    formData.append("title", title);
+    formData.append("category", category);
+    formData.append("description", description);
+    tags.forEach((tag) => formData.append("tags", tag));
+    if (blogImage) formData.append("blogImage", blogImage);
+    formData.append("status", "draft");
+
+    let res;
+
+    if (blogId) {
+      res = await axios.put(
+        `${import.meta.env.VITE_APP_BACKEND_URL}/blog/update/${blogId}`,
+        formData,
+        { withCredentials: true }
+      );
+    } else {
+      res = await axios.post(
+        `${import.meta.env.VITE_APP_BACKEND_URL}/blog/create`,
+        formData,
+        { withCredentials: true }
+      );
+      setBlogId(res.data._id); 
+    }
+
+    setStatusMsg("Draft saved ✓");
+  } catch (error) {
+    console.error(error);
+    setStatusMsg("Draft save failed");
+  }
+};
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -76,7 +141,8 @@ const CreateBlog = () => {
       formData.append("description", description);
       tags.forEach((tag) => formData.append("tags", tag));
       formData.append("blogImage", blogImage);
-      console.log("blogImage", blogImage);
+      formData.append("status", "published");
+      // console.log("blogImage", blogImage);
 
       await axios.post(
         `${import.meta.env.VITE_APP_BACKEND_URL}/blog/create`,
@@ -84,10 +150,12 @@ const CreateBlog = () => {
         {
           withCredentials: true,
           // headers: { "Content-Type": "multipart/form-data" },
-        }
+        },
       );
 
-      toast.success("Blog created successfully");
+      toast.success("Blog published.");
+      localStorage.removeItem("draft-blog");
+      setBlogId(null);
       setTitle("");
       setCategory("");
       setDescription("");
@@ -95,14 +163,27 @@ const CreateBlog = () => {
       setBlogImage("");
       setBlogImagePreview("");
       setMetadataGenerated(false);
+      setStatusMsg("");
     } catch (error) {
       console.error(error);
-      toast.error(error?.response?.data?.message || "Failed to create blog");
+      toast.error(error?.response?.data?.message || "Failed to ublish blog");
     }
     setLoading(false);
   };
 
-   return (
+    
+
+useEffect(() => {
+  if (!title && !description && !category && tags.length === 0) return;
+
+  const timer = setTimeout(() => {
+    saveDraft();
+  }, 5000);
+
+  return () => clearTimeout(timer);
+}, [title, description, category, tags]);
+
+  return (
     <div className="sm:absolute left-60  flex justify-center w-full md:w-3/4 py-6">
       <div className="rounded-xl shadow-lg bg-white p-4 sm:p-6 space-y-5 w-full max-w-3xl">
         {/* AI Feature Banner */}
@@ -227,14 +308,18 @@ const CreateBlog = () => {
                 <span className="text-lg transition-transform group-hover:rotate-12">
                   ✨
                 </span>
-                {autoMetaLoading ? "Analyzing image..." : "Generate Metadata with AI"}
+                {autoMetaLoading
+                  ? "Analyzing image..."
+                  : "Generate Metadata with AI"}
               </button>
             )}
           </div>
 
           {/* Description */}
           <div ref={descriptionRef}>
-            <label className="text-gray-500 font-medium px-1">Description</label>
+            <label className="text-gray-500 font-medium px-1">
+              Description
+            </label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
@@ -244,13 +329,22 @@ const CreateBlog = () => {
             ></textarea>
           </div>
 
-          {/* Submit */}
-          <button
-            className="relative bg-blue-600 text-white px-6 py-2 rounded-md shadow hover:bg-blue-700 disabled:opacity-60"
-            disabled={loading}
-          >
-            {loading ? <SubmitBtnLoader /> : "Create Blog"}
-          </button>
+          <div className="flex gap-4">
+            <button
+              type="button"
+              onClick={saveDraft}
+              className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400"
+            >
+              Save Draft
+            </button>
+            {/* Submit */}
+            <button
+              className="relative bg-blue-600 text-white px-6 py-2 rounded-md shadow hover:bg-blue-700 disabled:opacity-60"
+              disabled={loading}
+            >
+              {loading ? <SubmitBtnLoader /> : "Publish Blog"}
+            </button>
+          </div>
         </form>
       </div>
     </div>
