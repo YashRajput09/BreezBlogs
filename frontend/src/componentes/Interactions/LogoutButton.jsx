@@ -151,7 +151,7 @@ const LogoutButton = ({onClick}) => {
             ${isClicked ? 'scale-100' : 'active:scale-95'}`}
         />
 
-        <span className="relative z-10 text-black font-medium">LogOut</span>
+        <span className="relative z-10 text-black font-medium hover:text-red-500 duration-300">LogOut</span>
 
         {/* Doorway SVG */}
         <svg className="absolute bottom-1 right-3 w-8 fill-white  z-[3]" viewBox="0 0 100 100">
