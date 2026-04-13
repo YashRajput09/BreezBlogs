@@ -96,6 +96,7 @@ const CreateBlog = () => {
   };
 
  const saveDraft = async () => {
+   setLoading(true);
   try {
     setStatusMsg("Saving draft...");
 
@@ -123,12 +124,16 @@ const CreateBlog = () => {
       );
       setBlogId(res.data._id); 
     }
-
-    setStatusMsg("Draft saved ✓");
+  // setStatusMsg('Draft saved ✓');
+  
+    toast.success('"Draft saved ✓')
   } catch (error) {
     console.error(error);
-    setStatusMsg("Draft save failed");
+    // setStatusMsg("Draft save failed");
+console.log(error);
+    toast.error('Draft save failed');
   }
+  setLoading(false);
 };
 
   const handleSubmit = async (e) => {
@@ -174,7 +179,10 @@ const CreateBlog = () => {
     
 
 useEffect(() => {
-  if (!title && !description && !category && tags.length === 0) return;
+  // if (!title && !description && !category && tags.length === 0) return;
+  if (!title && !description) return;
+
+  if (!blogImage && !blogId) return; // 👈 important
 
   const timer = setTimeout(() => {
     saveDraft();
@@ -335,7 +343,7 @@ useEffect(() => {
               onClick={saveDraft}
               className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400"
             >
-              Save Draft
+             {loading ? <SubmitBtnLoader /> : "Save Draft"}
             </button>
             {/* Submit */}
             <button

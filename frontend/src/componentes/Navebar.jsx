@@ -117,7 +117,7 @@ const Navebar = () => {
             {isAuthenticated && profile?.role === "admin" && (
               <Link
                 to="/dashboard"
-                className={`${scrolled ? "text-black" : "text-black"}`}
+                className={`hover:text-blue-500 duration-300 ${scrolled ? "text-black" : "text-black"}`}
               >
                 Dashboard
               </Link>
@@ -126,9 +126,7 @@ const Navebar = () => {
             {!isAuthenticated ? (
               <Link
                 to="/login"
-                className={`px-4 py-2 rounded-full transition ${
-                  scrolled ? "bg-white text-black" : "bg-black text-white"
-                }`}
+                className={`px-4 py-2 rounded-full transition bg-black text-white hover:text-blue-500 duration-300`}
               >
                 LogIn
               </Link>
