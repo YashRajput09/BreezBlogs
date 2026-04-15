@@ -10,6 +10,7 @@ import { GrScheduleNew } from "react-icons/gr";
 import { FaHome } from "react-icons/fa";
 import { RiLogoutBoxRLine } from "react-icons/ri";
 import { useNavigate } from 'react-router-dom';
+import { RiDraftFill } from "react-icons/ri";
 
 
 const SideBarBtn = ({ icon: Icon, label, onClick }) => (
@@ -91,6 +92,11 @@ const SideBar = ({ setComponent }) => {
               icon={GrScheduleNew}
               label="Create Blog"
               onClick={() => {handleComponent("Create Blog"), setShow(!show)}}
+            />
+            <SideBarBtn
+              icon={RiDraftFill}
+              label="Draft Blogs"
+              onClick={() => {handleComponent("Draft Blogs"), setShow(!show)}}
             />
             <SideBarBtn
               icon={GrScheduleNew}
