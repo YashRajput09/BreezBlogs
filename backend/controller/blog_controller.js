@@ -310,3 +310,21 @@ export const blogLikedBy = async(req, res) =>{
     res.status(500).json({ error: error.message });
   }
 }
+
+export const getMyDraftBlogs = async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    const drafts = await blogModel.find({
+      author: userId,
+      status: "draft",
+    })
+      .sort({ updatedAt: -1 }) // latest first
+      .select("title category updatedAt blogImage"); // optimize payload
+
+    res.status(200).json(drafts);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to fetch drafts" });
+  }
+};

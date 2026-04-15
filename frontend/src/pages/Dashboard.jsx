@@ -6,6 +6,7 @@ import MyBlogs from "../dashboard/MyBlogs.jsx";
 import BlogsAnalysis from "../dashboard/Analysis/BlogsAnalysis.jsx"
 import { useAuth } from "../context/AuthProvider.jsx";
 import { useNavigate } from "react-router-dom";
+import MyDrafts from "../dashboard/MyDraft.jsx";
 
  const Dashboard = () => {
   const [component, setComponent] = useState("My Blogs");
@@ -27,6 +28,8 @@ import { useNavigate } from "react-router-dom";
         <MyProfile/>
       ) : component === "Create Blog" ? (
         <CreateBlog/>
+      ) : component === "Draft Blogs" ? (
+        <MyDrafts/>
       ) : component === "Blogs Analysis" ? (
         <BlogsAnalysis/>
       ) : (
