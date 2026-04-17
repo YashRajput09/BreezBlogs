@@ -316,7 +316,7 @@ export const getMyDraftBlogs = async (req, res) => {
     const userId = req.user._id;
 
     const drafts = await blogModel.find({
-      author: userId,
+      createdBy: userId,
       status: "draft",
     })
       .sort({ updatedAt: -1 }) // latest first
