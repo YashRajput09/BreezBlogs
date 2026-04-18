@@ -7,16 +7,17 @@ import SubmitBtnLoader from "../loaders/SubmitBtnLoader";
 const UpdateBlog = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  
+
   // Blog states
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("");
   const [description, setDescription] = useState("");
-  const [tags, setTags] = useState([]);  // Changed from "" to []
-  const [tagInput, setTagInput] = useState(""); 
+  const [tags, setTags] = useState([]); // Changed from "" to []
+  const [tagInput, setTagInput] = useState("");
   const [blogImage, setBlogImage] = useState(null);
   const [blogImagePreview, setBlogImagePreview] = useState("");
   const [loading, setLoading] = useState(false);
+  const [blogStatus, setBlogStatus] = useState("");
 
   // Function to add a tag when user presses Space or Enter
   const addTag = () => {
@@ -68,14 +69,15 @@ const UpdateBlog = () => {
       try {
         const { data } = await axios.get(
           `${import.meta.env.VITE_APP_BACKEND_URL}/blog/single-blog/${id}`,
-          { withCredentials: true }
+          { withCredentials: true },
         );
 
         setTitle(data?.blog?.title || "");
         setCategory(data?.blog?.category || "");
-        setTags(Array.isArray(data?.blog?.tags) ? data.blog.tags : []);  // Ensure it's always an array
+        setTags(Array.isArray(data?.blog?.tags) ? data.blog.tags : []); // Ensure it's always an array
         setDescription(data?.blog?.description || "");
         setBlogImagePreview(data?.blog?.blogImage?.url || "");
+        setBlogStatus(data?.blog?.status || "");
       } catch (error) {
         console.error("Error fetching blog data:", error);
       }
@@ -85,25 +87,36 @@ const UpdateBlog = () => {
   }, [id]);
 
   // Handle update submission
-  const handleUpdate = async (e) => {
-    e.preventDefault();
-    setLoading(true); 
+  const handleUpdate = async (newStatus) => {
+    // e.preventDefault();
+    setLoading(true);
 
     try {
       const formData = new FormData();
       formData.append("title", title);
       formData.append("category", category);
       formData.append("description", description);
-      formData.append("tags", JSON.stringify(tags)); 
+      formData.append("tags", JSON.stringify(tags));
       if (blogImage) formData.append("blogImage", blogImage); // Only append if changed
+
+       if (newStatus) {
+      formData.append("status", newStatus);
+    }
 
       await axios.put(
         `${import.meta.env.VITE_APP_BACKEND_URL}/blog/update/${id}`,
         formData,
-        { withCredentials: true }
+        { withCredentials: true },
       );
 
-      toast.success("Blog updated successfully");
+       if (newStatus === "draft") {
+      toast.success("Draft saved successfully ✏️");
+    } else if (newStatus === "published") {
+      toast.success("Blog published successfully 🚀");
+    } else {
+      toast.success("Blog updated successfully 🔄");
+    }
+
       navigate("/dashboard");
     } catch (error) {
       console.error(error);
@@ -117,7 +130,7 @@ const UpdateBlog = () => {
       <div className="rounded-md shadow-lg bg-slate-50 p-4 space-y-5">
         <h1 className="text-xl font-bold pt-4">Update Blog Details</h1>
 
-        <form onSubmit={handleUpdate} className="flex flex-col gap-2">
+        <form  className="flex flex-col gap-2">
           {/* Title */}
           <div>
             <label htmlFor="title" className="text-gray-400 font-medium px-1">
@@ -134,7 +147,10 @@ const UpdateBlog = () => {
 
           {/* Category */}
           <div>
-            <label htmlFor="category" className="text-gray-400 font-medium px-1">
+            <label
+              htmlFor="category"
+              className="text-gray-400 font-medium px-1"
+            >
               Category
             </label>
             <input
@@ -157,24 +173,23 @@ const UpdateBlog = () => {
               onKeyDown={handleTagInputChange}
               className="w-full border-2 rounded-md px-2 py-1"
             />
-          <div className="mt-2">
-  {tags.flat().map((tag, index) => (
-    <span
-      key={index}
-      className="mr-2 mb-2 px-3 py-1 border text-gray-500 rounded-lg inline-flex items-center"
-    >
-      #{tag}
-      <button
-        type="button"
-        onClick={() => removeTag(tag)}
-        className="ml-2 "
-      >
-        ×
-      </button>
-    </span>
-  ))}
-</div>
-
+            <div className="mt-2">
+              {tags.flat().map((tag, index) => (
+                <span
+                  key={index}
+                  className="mr-2 mb-2 px-3 py-1 border text-gray-500 rounded-lg inline-flex items-center"
+                >
+                  #{tag}
+                  <button
+                    type="button"
+                    onClick={() => removeTag(tag)}
+                    className="ml-2 "
+                  >
+                    ×
+                  </button>
+                </span>
+              ))}
+            </div>
           </div>
 
           {/* Image Preview */}
@@ -186,7 +201,10 @@ const UpdateBlog = () => {
 
           {/* Upload Image */}
           <div>
-            <label htmlFor="uploadBlogImage" className="text-gray-400 font-medium px-1">
+            <label
+              htmlFor="uploadBlogImage"
+              className="text-gray-400 font-medium px-1"
+            >
               Upload Blog Image
             </label>
             <input
@@ -198,7 +216,10 @@ const UpdateBlog = () => {
 
           {/* Description */}
           <div>
-            <label htmlFor="description" className="text-gray-400 font-medium px-1">
+            <label
+              htmlFor="description"
+              className="text-gray-400 font-medium px-1"
+            >
               Description
             </label>
             <textarea
@@ -211,9 +232,35 @@ const UpdateBlog = () => {
           </div>
 
           {/* Submit Button */}
-          <button type="submit" className="relative bg-blue-500 text-white px-6 py-2 rounded-md">
-            {loading ? <SubmitBtnLoader /> : "Update"}
-          </button>
+          <div className="flex gap-3 justify-center">
+            {blogStatus === "draft" ? (
+              <>
+                <button
+                  type="button"
+                  onClick={() => handleUpdate("draft")}
+                  className="bg-gray-500 text-white px-4 py-2 rounded-md"
+                >
+                  Save Draft
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => handleUpdate("published")}
+                  className="bg-green-500 text-white px-4 py-2 rounded-md"
+                >
+                  Publish
+                </button>
+              </>
+            ) : (
+              <button
+                type="submit"
+                onClick={() => handleUpdate("published")}
+                className="relative bg-blue-500 text-white px-6 py-2 rounded-md"
+              >
+                {loading ? <SubmitBtnLoader /> : "Update"}
+              </button>
+            )}
+          </div>
         </form>
       </div>
     </div>
