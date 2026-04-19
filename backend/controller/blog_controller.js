@@ -186,11 +186,10 @@ export const getSingleBlog = async (req, res) => {
 // admin can see their all blog
 export const getMyBlogs = async (req, res) => {
   const createdBy = req.user._id;
-  const blogs = await blogModel.find({ createdBy,  
-    $or: [
-    { status: "published" },
-    { status: { $exists: false } }
-  ] });
+const blogs = await blogModel.find({
+  createdBy,
+  status: "published"
+});
   res.status(200).json(blogs);
 };
 
