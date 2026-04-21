@@ -13,6 +13,7 @@ import dashboardRoute from './routes/dashboard_route.js'
 import recommadedRoute from './routes/recommendation_route.js';
 import autoMetaRoutes from './routes/autoMeta_routes.js'
 import qaAssistantRoute from './routes/assistant_route.js';
+import { apiLimiter } from './middleware/rateLimiter.js';
 const app = express();
 
 // define session options
@@ -32,6 +33,7 @@ app.use(session(sessionOptions));
 app.use(express.json()); // Parse application/json
 app.use(express.urlencoded({ extended: true })); // Parse application/x-www-form-urlencoded
 app.use(cookieParser());
+app.set("trust proxy", 1);
 
 const allowedOrigins = [
     'http://localhost:5173',
@@ -81,10 +83,10 @@ async function dbConnection() {
 dbConnection();
 
 // ROUTES
-app.use("/user", fileUploadMiddleware, userRoute);
-app.use("/user/dashboard",fileUploadMiddleware, dashboardRoute)
-app.use("/blog", fileUploadMiddleware, blogRoute);
-app.use("/blog/recommanded", fileUploadMiddleware, recommadedRoute);
-app.use("/blog/assistant", qaAssistantRoute);
-app.use("/api/auto-meta", upload.single("blogImage"), autoMetaRoutes);
+app.use("/user",apiLimiter, fileUploadMiddleware, userRoute);
+app.use("/user/dashboard",apiLimiter, fileUploadMiddleware, dashboardRoute)
+app.use("/blog",apiLimiter, fileUploadMiddleware, blogRoute);
+app.use("/blog/recommanded",apiLimiter, fileUploadMiddleware, recommadedRoute);
+app.use("/blog/assistant",apiLimiter, qaAssistantRoute);
+app.use("/api/auto-meta",apiLimiter, upload.single("blogImage"), autoMetaRoutes);
 
