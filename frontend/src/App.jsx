@@ -19,6 +19,8 @@ import { Toaster } from 'react-hot-toast';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import SearchBlogs from './pages/SearchBlogs';
+import ScrollToTopOnRouteChange from './componentes/Scroll/ScrollToTopOnRouteChange';
+import FScrollToTopButton from './componentes/Scroll/ScrollToTopButton';
 // import FollowerModal from './componentes/Profile/FollowersList';
 
 function App() {
@@ -32,6 +34,7 @@ function App() {
       {/* <div className=""> */}
       <div className="pt-28 md:pt-20">
        {!hidePages && <Navebar/>}
+       <ScrollToTopOnRouteChange/>
        <Routes>
         <Route path="/" element={<Home/>}/>
         <Route path="/blogs" element={<Blogs/>}/>
@@ -52,6 +55,7 @@ function App() {
         <Route path='*' element={<PageNotFound/>}/>
        </Routes>
        <Toaster />
+       <FScrollToTopButton />
        {!hidePages && <Footer/>}
       </div>
     </>
