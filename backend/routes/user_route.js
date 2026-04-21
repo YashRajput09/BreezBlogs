@@ -13,19 +13,20 @@ import { isAuthenticated } from "../middleware/authenticateUser.js";
 import { isAdmin } from "../middleware/authorizeUser.js";
 import { saveRedirectUrl } from "../middleware/redirectUrl.js";
 import { followUser, getFollowing, getSingleUserFollowing, getSingleUserFollower } from "../controller/feed_controller.js";
+import { authLimiter } from "../middleware/rateLimiter.js";
 const router = express.Router();
 
 router
   .route("/signup")
   // .get(signUpFrom)
-  .post(signUpUser);
+  .post(authLimiter, signUpUser);
 
 router
   .route("/login")
   // .get(logInForm)
-  .post(saveRedirectUrl, logInUser);
+  .post(authLimiter, saveRedirectUrl, logInUser);
 
-router.route("/logout").post(isAuthenticated, logOutUser);
+router.route("/logout").post(authLimiter, isAuthenticated, logOutUser);
 
 router.route("/myprofile").get(isAuthenticated, getMyProfile);
 
