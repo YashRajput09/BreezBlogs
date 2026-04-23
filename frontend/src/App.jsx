@@ -1,26 +1,27 @@
-import React from 'react';
+import React, { lazy, Suspense } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import Navebar from './componentes/Navebar';
-import Home from './componentes/Home';
 import Footer from './componentes/Footer';
-import Blogs from './pages/Blogs';
-import About from './pages/About';
-import Contact from './pages/Contact';
-import Creators from './pages/Creators';
-import CreatorProfie from './pages/CreatorProfile';
-import Login from './pages/Login';
-import SignUp from './pages/SignUp';
-import Dashboard from './pages/Dashboard';
-import UpdateBlog from './dashboard/UpdateBlog';
-import ViewBlog from './pages/ViewBlog';
-import UpdateAdminProfile from './dashboard/updateAdminProfile';
+const Home = lazy(() => import('./componentes/Home'));
+const Blogs = lazy(() => import('./pages/Blogs'));
+const About = lazy(() => import('./pages/About'));
+const Contact = lazy(() => import('./pages/Contact'));
+const Creators = lazy(() => import('./pages/Creators'));
+const CreatorProfie = lazy(() => import('./pages/CreatorProfile'));
+const Login = lazy(() => import('./pages/Login'));
+const SignUp = lazy(() => import('./pages/SignUp'));
+const Dashboard = lazy(() => import('./pages/Dashboard'));
+const UpdateBlog = lazy(() => import('./dashboard/UpdateBlog'));
+const ViewBlog = lazy(() => import('./pages/ViewBlog'));
+const UpdateAdminProfile = lazy(() => import('./dashboard/updateAdminProfile'));
+const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
+const ResetPassword = lazy(() => import('./pages/ResetPassword'));
 import PageNotFound from './pages/PageNotFound';
 import { Toaster } from 'react-hot-toast';
-import ForgotPassword from './pages/ForgotPassword';
-import ResetPassword from './pages/ResetPassword';
 import SearchBlogs from './pages/SearchBlogs';
 import ScrollToTopOnRouteChange from './componentes/Scroll/ScrollToTopOnRouteChange';
 import FScrollToTopButton from './componentes/Scroll/ScrollToTopButton';
+import SkeletonLoader from './loaders/SkeletonLoader';
 // import FollowerModal from './componentes/Profile/FollowersList';
 
 function App() {
@@ -35,6 +36,7 @@ function App() {
       <div className="pt-28 md:pt-20">
        {!hidePages && <Navebar/>}
        <ScrollToTopOnRouteChange/>
+       <Suspense fallback={<SkeletonLoader/>}>
        <Routes>
         <Route path="/" element={<Home/>}/>
         <Route path="/blogs" element={<Blogs/>}/>
@@ -54,6 +56,7 @@ function App() {
         <Route path="/api/search" element={<SearchBlogs/>}/>
         <Route path='*' element={<PageNotFound/>}/>
        </Routes>
+       </Suspense>
        <Toaster />
        <FScrollToTopButton />
        {!hidePages && <Footer/>}

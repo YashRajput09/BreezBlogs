@@ -1,44 +1,46 @@
-import React, {useState} from "react";
-import SideBar from "../dashboard/SideBar.jsx";
-import MyProfile from "../dashboard/MyProfile.jsx";
-import CreateBlog from "../dashboard/CreateBlog.jsx";
-import MyBlogs from "../dashboard/MyBlogs.jsx";
-import BlogsAnalysis from "../dashboard/Analysis/BlogsAnalysis.jsx"
+import React, { lazy, Suspense, useState, useEffect } from "react";
 import { useAuth } from "../context/AuthProvider.jsx";
 import { useNavigate } from "react-router-dom";
-import MyDrafts from "../dashboard/MyDraft.jsx";
 
- const Dashboard = () => {
+const SideBar = lazy(() => import("../dashboard/SideBar.jsx"));
+const MyProfile = lazy(() => import("../dashboard/MyProfile.jsx"));
+const CreateBlog = lazy(() => import("../dashboard/CreateBlog.jsx"));
+const MyBlogs = lazy(() => import("../dashboard/MyBlogs.jsx"));
+const BlogsAnalysis = lazy(() => import("../dashboard/Analysis/BlogsAnalysis.jsx"));
+const MyDrafts = lazy(() => import("../dashboard/MyDraft.jsx"));
+
+const Dashboard = () => {
   const [component, setComponent] = useState("My Blogs");
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
 
-  const {isAuthenticated} = useAuth();
-  // console.log(isAuthenticated);
-  
-  //check user is LoggedIn
-  if(!isAuthenticated){ 
-    navigate('/')
-  }
-
-  return( 
-    <div>
-     <SideBar component={component} setComponent={setComponent}/>
-    {
-      component === "My Profile" ? (
-        <MyProfile/>
-      ) : component === "Create Blog" ? (
-        <CreateBlog/>
-      ) : component === "Draft Blogs" ? (
-        <MyDrafts/>
-      ) : component === "Blogs Analysis" ? (
-        <BlogsAnalysis/>
-      ) : (
-         // Pass setComponent to MyBlogs
-        <MyBlogs setComponent={setComponent}/>
-      )
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate("/");
     }
+  }, [isAuthenticated]);
+
+  return (
+    <div>
+      <Suspense fallback={<div>Loading Sidebar...</div>}>
+        <SideBar component={component} setComponent={setComponent} />
+      </Suspense>
+
+      <Suspense fallback={<div className="p-6">Loading...</div>}>
+        {component === "My Profile" ? (
+          <MyProfile />
+        ) : component === "Create Blog" ? (
+          <CreateBlog />
+        ) : component === "Draft Blogs" ? (
+          <MyDrafts />
+        ) : component === "Blogs Analysis" ? (
+          <BlogsAnalysis />
+        ) : (
+          <MyBlogs setComponent={setComponent} />
+        )}
+      </Suspense>
     </div>
-)
+  );
 };
 
 export default Dashboard;
