@@ -1,65 +1,62 @@
 import React from 'react';
 import { useAuth } from '../context/AuthProvider.jsx';
 import { Link } from 'react-router-dom';
-import Carousel from 'react-multi-carousel';
-import 'react-multi-carousel/lib/styles.css';
 
 const Devotional = () => {
   const { blogs } = useAuth();
-  const responsive = {
-    superLargeDesktop: {
-      // the naming can be any, depends on you.
-      breakpoint: { max: 4000, min: 3000 },
-      items: 5
-    },
-    desktop: {
-      breakpoint: { max: 3000, min: 1024 },
-      items: 6 
-    },
-    tablet: {
-      breakpoint: { max: 1024, min: 464 },
-      items: 3
-    },
-    mobile: {
-      breakpoint: { max: 464, min: 0 },
-      items: 1
-    }
-  };
-  // console.log("Hero : ", blogs);
 
-  if (!blogs || blogs.length === 0) return <div />;
-  const devotionalBlogs = blogs?.filter((blog) => blog.category[0] === "Devotional");
+  if (!blogs || blogs.length === 0) return null;
+
+  const devotionalBlogs = blogs.filter((blog) => blog.category?.[0] === 'Devotional');
+
+  if (devotionalBlogs.length === 0) return null;
 
   return (
-    <div className='md:mx-10 px-5 my-5 mb-5'>
-      <h1 className='text-2xl font-bold m-2'>Devotional</h1>
-      <div className="flex justify-center m-2">
-        <h2>The concept of god varies widely accross different cultures, religions and belief systems.</h2>
-      </div>
-      <Carousel responsive={responsive}>
-      {devotionalBlogs.map(({ _id, blogImage, title }) => (
-        <Link 
-        to={`/blog/view/${_id}`}  
-          key={_id} 
-          className='shadow-xl rounded-lg overflow-hidden transform hover:scale-105 duration-300 transition-transform flex flex-col  m-2'
-        >
-          <div className='group relative'>
-            <img 
-              src={blogImage.url} 
-              className='w-full h-48 object-cover' 
-              alt="Blog" 
+    <section className="px-4 md:px-10 py-6">
+
+      {/* Section label */}
+      <span className="inline-block text-[11px] font-medium uppercase tracking-widest text-slate-500 border-t-2 border-slate-900 dark:border-slate-100 pt-2 mb-1">
+        Devotional
+      </span>
+
+      <p className="text-xs italic text-slate-400 dark:text-slate-500 mb-5">
+        The concept of god varies widely across different cultures, religions and belief systems.
+      </p>
+
+      {/* Portrait tile grid */}
+      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2.5">
+        {devotionalBlogs.map(({ _id, blogImage, title }) => (
+          <Link
+            to={`/blog/view/${_id}`}
+            key={_id}
+            className="group relative aspect-[3/4] rounded-lg overflow-hidden no-underline block"
+          >
+            <img
+              src={blogImage.url}
+              alt={title}
+              loading="lazy"
+              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
             />
-            <div className='absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-25 group-hover:opacity-75 transition-transform duration-300'></div>
-            <h1 className='absolute bottom-2 text-white tracking-tight left-2 md:text-md font-medium group-hover:text-gray-300 duration-300 group-hover:tracking-wider'>
+            {/* Gradient overlay — always visible, deepens on hover */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent opacity-80 group-hover:opacity-100 transition-opacity duration-300" />
+            <span className="absolute bottom-2 left-2 right-2 text-white text-[11px] font-medium leading-tight">
               {title}
-            </h1>
-          </div>
+            </span>
+          </Link>
+        ))}
+      </div>
+
+      {/* View all */}
+      <div className="mt-4">
+        <Link
+          to="/blogs?category=Devotional"
+          className="text-xs font-medium text-blue-600 dark:text-blue-400 hover:underline underline-offset-4"
+        >
+          View all devotional →
         </Link>
-      ))}
-      </Carousel>
-    </div>
+      </div>
+    </section>
   );
 };
-
 
 export default Devotional;
