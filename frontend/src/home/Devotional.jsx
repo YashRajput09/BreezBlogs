@@ -12,10 +12,10 @@ const Devotional = () => {
   if (devotionalBlogs.length === 0) return null;
 
   return (
-    <section className="px-4 md:px-10 py-6">
+    <section className="px-4 md:px-16 pb-6">
 
       {/* Section label */}
-      <span className="inline-block text-[11px] font-medium uppercase tracking-widest text-slate-500 border-t-2 border-slate-900 dark:border-slate-100 pt-2 mb-1">
+      <span className="inline-block text font-medium uppercase tracking-widest text-slate-500 border-t-2 border-slate-900 dark:border-slate-100 pt-2 mb-1">
         Devotional
       </span>
 

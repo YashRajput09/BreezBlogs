@@ -10,7 +10,9 @@ const Hero = () => {
 
   return (
     <div  className=" md:mx-10 px-7">
-      <h1 className="text-2xl font-semibold ">Daily Blogs</h1>
+       <span className="inline-block text font-medium uppercase tracking-widest text-slate-500 border-t-2 border-slate-900 dark:border-slate-100 pt-2 mb-1">
+       Daily Blogs
+      </span>
     <div className=' grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 my-4'>
       {blogs.slice(0, 4).map(({ _id, blogImage, title, adminImage, adminName }) => (
         <Link 
