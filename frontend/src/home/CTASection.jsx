@@ -1,6 +1,9 @@
+import { Link, useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 import useReveal from "../hooks/Reveal";
 import useCountUp from "../hooks/CountUp";
 import {parseValue, formatValue} from "../utils/numberFormatter.js";
+import { useAuth } from "../context/AuthProvider.jsx";
 
 const stats = [
   { value: "48K+", label: "Published Blogs" },
@@ -32,6 +35,18 @@ function Stat({ value, label, delay }) {
 
 export default function CTASection() {
   const { ref, visible } = useReveal();
+    const { isAuthenticated, profile } = useAuth();
+    const navigate = useNavigate();
+
+    const handleStartWriting = () => {
+    if (isAuthenticated && profile.role === "admin") {
+      navigate("/dashboard")
+    } else {
+      navigate("/login");
+      toast.error("Only admin can create a blog");
+    }
+  }
+
 
   return (
     <section className="py-10 text-center">
@@ -68,7 +83,9 @@ export default function CTASection() {
         </p>
 
         <div className="flex gap-4 justify-center">
-          <button className="border-4 border-x-blue-400 px-16 py-2 rounded-full bg-black text-white">✦ Start Writing — with AI</button>
+          <button 
+          onClick={handleStartWriting}
+          className="border-4 border-x-blue-400 px-16 py-2 rounded-full bg-black text-white">✦ Start Writing — with AI</button>
           {/* <button className="btn-secondary">Explore Blogs</button> */}
         </div>
       </div>
