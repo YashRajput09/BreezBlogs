@@ -2,19 +2,19 @@ import cloudinary from "../cloudConfig.js";
 import blogModel from "../models/blog_model.js";
 import activityModel from "../models/activity_model.js";
 import mongoose from "mongoose";
-import {generateSearchQuery} from "../utils/search.js";
+import { generateSearchQuery } from "../utils/search.js";
 import { generateEmbedding } from "../services/embeddingService.js";
 
 // search blogs
-export const searchBlogs = async(req, res) =>{
-  const searchQuery = req.query.search || "" ; // Default to an empty string if search is not provided
+export const searchBlogs = async (req, res) => {
+  const searchQuery = req.query.search || ""; // Default to an empty string if search is not provided
   // console.log(req.query.search);
-  if(searchQuery){
+  if (searchQuery) {
     const searchBlogs = generateSearchQuery(searchQuery);
     // console.log("searchBlogs", searchBlogs)
     const allSearchBlogs = await blogModel.find(searchBlogs);
     return res.status(200).json(allSearchBlogs); // Return search results as JSON
-  }  else {
+  } else {
     return res.status(400).json({ message: "Search query is required" }); // Handle missing query
   }
 };
@@ -40,18 +40,19 @@ export const createBlog = async (req, res) => {
     }
 
     // 3. Validate required fields in req.body
-    const { category, title, description, tags, status} = req.body;
-  // console.log(category, title, tags);
-  
+    const { category, title, description, tags, status } = req.body;
+    // console.log(category, title, tags);
+
     let formattedTags;
     if (!tags) {
       formattedTags = [];
     } else if (typeof tags === "string") {
-      formattedTags = tags.includes("[") ? JSON.parse(tags) : tags.split(",").map(tag => tag.trim());
+      formattedTags = tags.includes("[")
+        ? JSON.parse(tags)
+        : tags.split(",").map((tag) => tag.trim());
     } else {
       formattedTags = tags; // Assume it's already an array
     }
-
 
     if (!category || !title || !description || !formattedTags.length) {
       return res
@@ -74,7 +75,7 @@ export const createBlog = async (req, res) => {
       blogImage.tempFilePath,
       {
         folder: "Blog_web",
-      }
+      },
     );
 
     // console.log("CloudinaryResponse : ", cloudinaryResponse);
@@ -82,8 +83,8 @@ export const createBlog = async (req, res) => {
     if (!cloudinaryResponse || cloudinaryResponse.error) {
       // console.log(cloudinaryResponse.error);
     }
-       // Generate embedding from title + description
-      const embeddingText = `${title}\n\n${description}`;
+    // Generate embedding from title + description
+    const embeddingText = `${title}\n\n${description}`;
     const embedding = await generateEmbedding(embeddingText);
 
     // 7. Prepare blog data
@@ -105,16 +106,15 @@ export const createBlog = async (req, res) => {
     // 8. Save the blog in the database
     const blog = await blogModel.create(blogData);
 
-      // Save recent activity automatically 
-  const createBlogActivity = await activityModel.create({
-   user: userId,
-    actionType: "publish",
-    contentId: blog._id,
-    contentType: "Blog",
-    message: `New article publish`,
-  });
-        // console.log("createBlogActivity : ",createBlogActivity);
-
+    // Save recent activity automatically
+    const createBlogActivity = await activityModel.create({
+      user: userId,
+      actionType: "publish",
+      contentId: blog._id,
+      contentType: "Blog",
+      message: `New article publish`,
+    });
+    // console.log("createBlogActivity : ",createBlogActivity);
 
     // 9. Send success response
     res.status(201).json({
@@ -144,7 +144,9 @@ export const deleteBlog = async (req, res) => {
 
 // get all blogs
 export const getAllBlogs = async (req, res) => {
-  const allBlogs = await blogModel.find();
+  const allBlogs = await blogModel
+    .find()
+    .populate("createdBy", "name profileImage");
   res.status(200).json(allBlogs);
 };
 
@@ -154,12 +156,11 @@ export const getSingleBlog = async (req, res) => {
   const userId = req.user;
   // console.log(userId);
   // console.log(id);
-  
-  
+
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(400).json({ message: "Invalid Blog Id" });
   }
-  const blog = await blogModel.findById(id).populate('createdBy');  
+  const blog = await blogModel.findById(id).populate("createdBy");
   if (!blog) {
     return res.status(404).json({ message: "Blog not found" });
   }
@@ -176,20 +177,20 @@ export const getSingleBlog = async (req, res) => {
       { _id: id, viewers: { $ne: userId } }, // Check if user hasn't viewed
       {
         $addToSet: { viewers: userId }, // Add user to viewers (ensures no duplicates)
-        $inc: { views: 1 } // Increment views by 1
-      }
+        $inc: { views: 1 }, // Increment views by 1
+      },
     );
   }
   res.status(200).json({ blog });
-}
+};
 
 // admin can see their all blog
 export const getMyBlogs = async (req, res) => {
   const createdBy = req.user._id;
-const blogs = await blogModel.find({
-  createdBy,
-  status: "published"
-});
+  const blogs = await blogModel.find({
+    createdBy,
+    status: "published",
+  });
   res.status(200).json(blogs);
 };
 
@@ -197,9 +198,10 @@ const blogs = await blogModel.find({
 export const updateBlog = async (req, res) => {
   const { id } = req.params;
   try {
-    
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({ message: "Invalid Blog Id, Blog not found" });
+      return res
+        .status(400)
+        .json({ message: "Invalid Blog Id, Blog not found" });
     }
 
     //Fetch existing blog
@@ -208,47 +210,47 @@ export const updateBlog = async (req, res) => {
       return res.status(404).json({ message: "Blog not found" });
     }
 
-  
- //check blog is present in database with given id
-  let cloudinaryResponse;
-  if (req.files && req.files.blogImage) {
-    // console.log(req.files);
-    const updatedImage = req.files.blogImage;
-     cloudinaryResponse = await cloudinary.uploader.upload(
-      updatedImage.tempFilePath,
-      {
-        folder: "Blog_web",
-      }
-    );
-    // console.log("CloudinaryResponse : ", cloudinaryResponse);
-  }
-  const updatedData = { ...req.body };
-  if (cloudinaryResponse) {
-    updatedData.blogImage = {
-      public_id: cloudinaryResponse.public_id,
-      url: cloudinaryResponse.secure_url
-    };
-    // updatedData.blogImage.public_id = cloudinaryResponse.public_id;
-    // updatedData.blogImage.url = cloudinaryResponse.secure_url;
-  }
+    //check blog is present in database with given id
+    let cloudinaryResponse;
+    if (req.files && req.files.blogImage) {
+      // console.log(req.files);
+      const updatedImage = req.files.blogImage;
+      cloudinaryResponse = await cloudinary.uploader.upload(
+        updatedImage.tempFilePath,
+        {
+          folder: "Blog_web",
+        },
+      );
+      // console.log("CloudinaryResponse : ", cloudinaryResponse);
+    }
+    const updatedData = { ...req.body };
+    if (cloudinaryResponse) {
+      updatedData.blogImage = {
+        public_id: cloudinaryResponse.public_id,
+        url: cloudinaryResponse.secure_url,
+      };
+      // updatedData.blogImage.public_id = cloudinaryResponse.public_id;
+      // updatedData.blogImage.url = cloudinaryResponse.secure_url;
+    }
 
-  if (req.body.tags) {
-    try {
-      let newTags = JSON.parse(req.body.tags); // Convert JSON string to array
-      if (!Array.isArray(newTags)) {
-        return res.status(400).json({ message: "Tags must be an array" });
-      }
+    if (req.body.tags) {
+      try {
+        let newTags = JSON.parse(req.body.tags); // Convert JSON string to array
+        if (!Array.isArray(newTags)) {
+          return res.status(400).json({ message: "Tags must be an array" });
+        }
 
         //Merge existing tags with new ones, ensuring a **flat structure**
         updatedData.tags = [...existingBlog.tags, ...newTags].flat();
-              //remove duplicate tags
+        //remove duplicate tags
 
         updatedData.tags = [...new Set(updatedData.tags)];
       } catch (error) {
         return res.status(400).json({ message: "Invalid tags format" });
-      }}
-  
-        //  Generate embedding from updated title + description
+      }
+    }
+
+    //  Generate embedding from updated title + description
     if (updatedData.title || updatedData.description) {
       const title = updatedData.title || existingBlog.title;
       const description = updatedData.description || existingBlog.description;
@@ -256,73 +258,74 @@ export const updateBlog = async (req, res) => {
       updatedData.embedding = await generateEmbedding(embeddingText);
     }
 
-  const updatedBlog = await blogModel.findByIdAndUpdate(
-    id,
-    { $set: updatedData}, // $set is used to update only the fields provided in the request
-    { new: true, runValidators: true } // Return the updated document & run validation
-  );
+    const updatedBlog = await blogModel.findByIdAndUpdate(
+      id,
+      { $set: updatedData }, // $set is used to update only the fields provided in the request
+      { new: true, runValidators: true }, // Return the updated document & run validation
+    );
 
-  res.status(200).json({ updatedBlog });
-} catch (error) {
+    res.status(200).json({ updatedBlog });
+  } catch (error) {
     console.log(error);
-    res.status(400).json({message: "All fields are required"})
-}
-}
+    res.status(400).json({ message: "All fields are required" });
+  }
+};
 
 // ********* blog Like feature *********
-export const blogLikes = async(req, res) =>{
- try {
-   const blog = await blogModel.findById(req.params.id);
-   if(!blog) return res.status(400).json({message: "Blog not found"});
-   res.json({ likes: blog.likes});
- } catch (error) {
-   console.error(error);
-   res.status(500).json({error: error.message});
- }
+export const blogLikes = async (req, res) => {
+  try {
+    const blog = await blogModel.findById(req.params.id);
+    if (!blog) return res.status(400).json({ message: "Blog not found" });
+    res.json({ likes: blog.likes });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: error.message });
+  }
 };
 
 // ********* blog likedBy feature **********
-export const blogLikedBy = async(req, res) =>{
-  const userId  = req.body.userId; // Ensure this is sent from the frontend
-  const {blogId} = req.params.id;
+export const blogLikedBy = async (req, res) => {
+  const userId = req.body.userId; // Ensure this is sent from the frontend
+  const { blogId } = req.params.id;
   try {
-   const blog = await blogModel.findById(req.params.id);
-   if(!blog) return res.status(400).json({message: "Blog not found"});
-    
-   if(blog.likedBy.includes(userId)){
-    blog.likes -= 1;
-    blog.likedBy = blog.likedBy.filter((id) => id.toString()!== userId);
-   } else {
-    blog.likes += 1;
-    blog.likedBy.push(userId);
-         // Save recent activity
-  const likedActivity =  await activityModel.create({
-    user: blog.createdBy,
-    actionType: "like",
-    contentId: blog._id,
-    contentType: "Blog",
-    message: `Article liked`,
-  });
-  // console.log(likedActivity)
-   }
-   await blog.save();
+    const blog = await blogModel.findById(req.params.id);
+    if (!blog) return res.status(400).json({ message: "Blog not found" });
 
-   res.json({ likes: blog.likes, likedBy: blog.likedBy })
+    if (blog.likedBy.includes(userId)) {
+      blog.likes -= 1;
+      blog.likedBy = blog.likedBy.filter((id) => id.toString() !== userId);
+    } else {
+      blog.likes += 1;
+      blog.likedBy.push(userId);
+      // Save recent activity
+      const likedActivity = await activityModel.create({
+        user: blog.createdBy,
+        actionType: "like",
+        contentId: blog._id,
+        contentType: "Blog",
+        message: `Article liked`,
+      });
+      // console.log(likedActivity)
+    }
+    await blog.save();
+
+    res.json({ likes: blog.likes, likedBy: blog.likedBy });
   } catch (error) {
-    console.error(error)
+    console.error(error);
     res.status(500).json({ error: error.message });
   }
-}
+};
 
 // ********* Draft blogs **********
 export const getMyDraftBlogs = async (req, res) => {
   try {
     const userId = req.user._id;
 
-    const drafts = await blogModel.find({
-      createdBy: userId,
-      status: "draft",
-    })
+    const drafts = await blogModel
+      .find({
+        createdBy: userId,
+        status: "draft",
+      })
       .sort({ updatedAt: -1 }) // latest first
       .select("title category updatedAt blogImage"); // optimize payload
 

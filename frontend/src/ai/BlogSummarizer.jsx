@@ -26,17 +26,19 @@ const BlogSummarization = ({ blogDescription }) => {
     setError("");
     try {
       const response = await axios.post(`${import.meta.env.VITE_APP_BACKEND_URL}/blog/chatbot`, {
-        message: blogDescription,
+        content: blogDescription,
       });
+      console.log(response);
 
-      if (response.data.message) {
-        setSummary(response.data.message[0].summary_text); // Extract summary
+      if (response.data.summary) {
+        setSummary(response.data.summary); // Extract summary
         setShowSummary(true); // Show summary after fetching
       } else {
+
         setError("Failed to fetch summary.");
       }
     } catch (err) {
-      setError("Error summarizing blog.");
+      setError(err.data || "AI Service temporarily unavailable");
       console.error(err);
     }
     setLoading(false);
