@@ -57,7 +57,7 @@ const Contact = () => {
                   icon: <CgMail />,
                 },
                 {
-                  text: "Crystal IT-Park Indore",
+                  text: "Indore",
                   rotate: "rotate-3",
                   icon: <FaLocationDot />,
                 },

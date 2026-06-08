@@ -54,7 +54,7 @@ const Creators = () => {
           <div className="w-full flex items-center  gap-6">
             {/* Profile Image */}
             <img
-              src={item?.profileImage?.url || "/default-image.jpg"}
+              src={item?.profileImage?.url || "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSRC4zD8GVtWrmLDUso2EuXHg1MB7yIadkLdw&s"}
               alt="Profile Placeholder"
               className="w-24 h-24 rounded-full object-cover border-3 border-blue-400 p-1 shadow-md"
             />
