@@ -4,10 +4,6 @@ import { Link } from "react-router-dom";
 
 const MyProfile = () => {
   const [creator, setCreator] = useState([]);
-  // console.log(
-  //   "import.meta.env.VITE_APP_BACKEND_URL",
-  //   import.meta.env.VITE_APP_BACKEND_URL
-  // );
   useEffect(() => {
     const fetchCreatorsDetails = async () => {
       try {
@@ -17,7 +13,6 @@ const MyProfile = () => {
             withCredentials: true,
           }
         );
-        // console.log("creators data: ", data);
         setCreator(data);
       } catch (error) {
         console.error("Error fetching creators data:", error);

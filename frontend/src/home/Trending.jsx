@@ -3,9 +3,13 @@ import { useAuth } from '../context/AuthProvider.jsx';
 import { Link } from 'react-router-dom';
 import Carousel from 'react-multi-carousel';
 import 'react-multi-carousel/lib/styles.css';
+import SkeletonLoader from '../loaders/SkeletonLoader.jsx';
 
 const Trending = () => {
-  const { blogs } = useAuth();
+  const { blogs, loading } = useAuth();
+  if(blogs === null) {
+    return <SkeletonLoader count={5}/>
+  }
   const responsive = {
     superLargeDesktop: {
       // the naming can be any, depends on you.

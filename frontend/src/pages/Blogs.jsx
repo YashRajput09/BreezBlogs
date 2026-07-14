@@ -24,7 +24,9 @@ const Blogs = () => {
         >
           <div className='group relative'>
             <img 
-              src={blogImage.url} 
+              src={blogImage.url || `https://placehold.co/1200x630/E5E7EB/374151?text=${encodeURIComponent(
+      title
+    )}`} 
               className='w-full h-48 object-cover' 
               alt="Blog" 
             />

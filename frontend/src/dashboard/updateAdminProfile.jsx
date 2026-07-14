@@ -32,6 +32,7 @@ const updateAdminImage = () => {
       setProfileImage(file);
     };  
     } catch (error) {
+      toast.error(error.message)
      console.log(error);
       
     }
@@ -57,15 +58,73 @@ const updateAdminImage = () => {
             // setProfileImage(data?.profileImage?.url);
             setImagePreview(data?.profileImage?.url);
 
-        } catch (error) {
-            console.log(error);
-        }
+        }catch (error) {
+  console.error(error);
+
+  if (error.response) {
+    toast.error(
+      error.response.data.message || "Something went wrong"
+    );
+  } else if (error.request) {
+    toast.error("Server not responding");
+  } else {
+    toast.error(error.message);
+  }
+}
     }
     fetchAdminDetails();
   }, []);
 
+const validateForm = () => {
+  if (!role.trim()) {
+    toast.error("Please select a role");
+    return false;
+  }
+
+  if (!name.trim()) {
+    toast.error("Name is required");
+    return false;
+  }
+
+  if (name.length < 3) {
+    toast.error("Name must be at least 3 characters");
+    return false;
+  }
+
+  if (!email.trim()) {
+    toast.error("Email is required");
+    return false;
+  }
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  if (!emailRegex.test(email)) {
+    toast.error("Enter a valid email");
+    return false;
+  }
+
+  if (!mobileNumber.trim()) {
+    toast.error("Mobile number is required");
+    return false;
+  }
+
+  if (!/^\d{10}$/.test(mobileNumber)) {
+    toast.error("Mobile number must be 10 digits");
+    return false;
+  }
+
+  if (!education.trim()) {
+    toast.error("Education field is required");
+    return false;
+  }
+
+  return true;
+};
+
   const handleSubmit = async (e) => {
       e.preventDefault();
+       if (!validateForm()) return;
+
       setLoading(true);
 
     const formData = new FormData();
@@ -89,7 +148,7 @@ const updateAdminImage = () => {
         }
       );
       // console.log("updated data : ",data);
-      toast.success("Welcome to BreezBlogs");
+      toast.success("Profile Updated successfully");
       navigate('/dashboard');      
       setLoading(false);
     } catch (error) {
