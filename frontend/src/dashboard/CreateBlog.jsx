@@ -11,8 +11,9 @@ const CreateBlog = () => {
   const [tags, setTags] = useState([]);
   const [tagInput, setTagInput] = useState("");
   const [blogImage, setBlogImage] = useState("");
-  const [blogImagePreview, setBlogImagePreview] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [blogImagePreview, setBlogImagePreview] = useState(""); 
+  const [draftLoading, setDraftLoading] = useState(false);
+  const [publishLoading, setPublishLoading] = useState(false);
   const [metadataGenerated, setMetadataGenerated] = useState(false);
   const [blogId, setBlogId] = useState(null);
   const [statusMsg, setStatusMsg] = useState("");
@@ -96,7 +97,7 @@ const CreateBlog = () => {
   };
 
  const saveDraft = async () => {
-   setLoading(true);
+setDraftLoading(true);
   try {
     setStatusMsg("Saving draft...");
 
@@ -132,13 +133,14 @@ const CreateBlog = () => {
     // setStatusMsg("Draft save failed");
 console.log(error);
     toast.error('Draft save failed');
-  }
-  setLoading(false);
+  } finally {
+  setDraftLoading(false);
+}
 };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
+setPublishLoading(true);
     try {
       const formData = new FormData();
       formData.append("title", title);
@@ -149,14 +151,19 @@ console.log(error);
       formData.append("status", "published");
       // console.log("blogImage", blogImage);
 
-      await axios.post(
-        `${import.meta.env.VITE_APP_BACKEND_URL}/blog/create`,
-        formData,
-        {
-          withCredentials: true,
-          // headers: { "Content-Type": "multipart/form-data" },
-        },
-      );
+      if (blogId) {
+  await axios.put(
+    `${import.meta.env.VITE_APP_BACKEND_URL}/blog/update/${blogId}`,
+    formData,
+    { withCredentials: true }
+  );
+} else {
+  await axios.post(
+    `${import.meta.env.VITE_APP_BACKEND_URL}/blog/create`,
+    formData,
+    { withCredentials: true }
+  );
+}
 
       toast.success("Blog published.");
       localStorage.removeItem("draft-blog");
@@ -172,24 +179,25 @@ console.log(error);
     } catch (error) {
       console.error(error);
       toast.error(error?.response?.data?.message || "Failed to ublish blog");
-    }
-    setLoading(false);
+    } finally {
+      setPublishLoading(false);
+}
   };
 
     
 
-useEffect(() => {
-  // if (!title && !description && !category && tags.length === 0) return;
-  if (!title && !description) return;
+// useEffect(() => {
+//   // if (!title && !description && !category && tags.length === 0) return;
+//   if (!title && !description) return;
 
-  if (!blogImage && !blogId) return; // 👈 important
+//   if (!blogImage && !blogId) return; // 👈 important
 
-  const timer = setTimeout(() => {
-    saveDraft();
-  }, 5000);
+//   const timer = setTimeout(() => {
+//     saveDraft();
+//   }, 5000);
 
-  return () => clearTimeout(timer);
-}, [title, description, category, tags]);
+//   return () => clearTimeout(timer);
+// }, [title, description, category, tags]);
 
   return (
     <div className="sm:absolute left-60  flex justify-center w-full md:w-3/4 py-6">
@@ -341,16 +349,17 @@ useEffect(() => {
             <button
               type="button"
               onClick={saveDraft}
+               disabled={publishLoading}
               className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400"
             >
-             {loading ? <SubmitBtnLoader /> : "Save Draft"}
+             {draftLoading ? <SubmitBtnLoader /> : "Save Draft"}
             </button>
             {/* Submit */}
             <button
               className="relative bg-blue-600 text-white px-6 py-2 rounded-md shadow hover:bg-blue-700 disabled:opacity-60"
-              disabled={loading}
+              disabled={draftLoading || publishLoading}
             >
-              {loading ? <SubmitBtnLoader /> : "Publish Blog"}
+              {publishLoading ? <SubmitBtnLoader /> : "Publish Blog"}
             </button>
           </div>
         </form>
