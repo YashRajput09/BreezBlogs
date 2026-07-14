@@ -105,7 +105,9 @@ const ViewBlog = () => {
         >
           {/* Blog Image */}
           <motion.img
-            src={blog?.blogImage?.url}
+            src={blog?.blogImage?.url || `https://placehold.co/1200x630/E5E7EB/374151?text=${encodeURIComponent(
+      blog?.title
+    )}: Image not available`}
             alt="Blog cover"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}

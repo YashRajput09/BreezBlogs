@@ -63,7 +63,7 @@ const CreatorProfile = () => {
           >
             <img
               className="object-cover w-full h-full"
-              src={creatorProfile?.profileImage?.url}
+              src={creatorProfile?.profileImage?.url || "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSRC4zD8GVtWrmLDUso2EuXHg1MB7yIadkLdw&s"}
               alt=""
               srcSet=""
             />
