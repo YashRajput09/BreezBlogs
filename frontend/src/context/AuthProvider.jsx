@@ -113,7 +113,6 @@ export const AuthProvider = ({ children }) => {
         setIsAuthenticated(false);
       } finally {
 
-        // ===== CHANGED =====
         setProfileLoading(false);
 
       }
@@ -131,7 +130,6 @@ export const AuthProvider = ({ children }) => {
         console.error(error);
       } finally {
 
-        // ===== CHANGED =====
         setBlogsLoading(false);
 
       }
@@ -149,18 +147,10 @@ export const AuthProvider = ({ children }) => {
         profile,
         isAuthenticated,
         setIsAuthenticated,
-
-        // ===== CHANGED =====
         blogsLoading,
         profileLoading,
       }}
     >
-
-      {/* ===== CHANGED ===== */}
-      {/* Removed global loading gate */}
-      {/* Before:
-      {loading ? <BreezBlogsLoader count={6} /> : children}
-      */}
 
       {children}
 

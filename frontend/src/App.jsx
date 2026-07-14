@@ -23,8 +23,8 @@ import SearchBlogs from './pages/SearchBlogs';
 import ScrollToTopOnRouteChange from './componentes/Scroll/ScrollToTopOnRouteChange';
 import FScrollToTopButton from './componentes/Scroll/ScrollToTopButton';
 import SkeletonLoader from './loaders/SkeletonLoader';
-import MessengerPage from './pages/MessengerPage';
-import { SocketProvider } from './context/SocketContext';
+// import MessengerPage from './pages/MessengerPage';
+// import { SocketProvider } from './context/SocketContext';
 // ↑ adjust path if you placed SocketContext somewhere else
 
 // ── Helper: reads auth from localStorage (works with most JWT setups) ─────────
